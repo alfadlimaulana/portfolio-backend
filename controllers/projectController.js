@@ -1,5 +1,6 @@
 const Project = require("../models/Project");
 const { getErrorMessage } = require("../utils/helper.js");
+const mongoose = require('mongoose')
 
 module.exports.getProjects = async (req, res) => {
   try {
@@ -10,7 +11,7 @@ module.exports.getProjects = async (req, res) => {
       message: "Data berhasil diambil",
     });
   } catch (error) {
-    res.status(404).send({
+    res.status(500).send({
       status: "failed",
       errors: getErrorMessage(error),
     });
@@ -35,7 +36,23 @@ module.exports.addProject = async (req, res) => {
 
 module.exports.getProjectById = async (req, res) => {
   try {
-    const data = await Project.findOne({ id: parseInt(req.params.id) });
+    const {id} = req.params
+    if(!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(404).json({
+        status:"failed",
+        errors: "Project Not found"
+      })
+    }
+
+    const data = await Project.findOne({ id: parseInt(id) });
+
+    if (!data) {
+      res.status(404).json({
+        status:"failed",
+        errors: "Project Not found"
+      })
+    }
+
     res.status(200).json({
       status: "success",
       data: data,
@@ -51,7 +68,24 @@ module.exports.getProjectById = async (req, res) => {
 
 module.exports.updateProject = async (req, res) => {
   try {
-    const data = await Project.findOneAndUpdate({ id: parseInt(req.params.id) }, req.body);
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(404).json({
+        status: "failed",
+        errors: "Project Not Found"
+      })
+    }
+    
+    const data = await Project.findOneAndUpdate({ id }, req.body);
+    
+    if (!data) {
+      res.status(404).json({
+        status:"failed",
+        errors: "Project Not found"
+      })
+    }
+
     res.status(200).json({
       status: "success",
       data: data,
@@ -67,7 +101,24 @@ module.exports.updateProject = async (req, res) => {
 
 module.exports.deleteProject = async (req, res) => {
   try {
-    const data = await Project.findOneAndDelete({ id: parseInt(req.params.id) });
+    const { id } = req.params
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      res.status(404).json({
+        status: "failed",
+        errors: "Project Not Found"
+      })
+    }
+
+    const data = await Project.findOneAndDelete({ id: parseInt(id) });
+    
+    if (!data) {
+      res.status(404).json({
+        status:"failed",
+        errors: "Project Not found"
+      })
+    }
+    
     res.status(200).json({
       status: "success",
       data: data,

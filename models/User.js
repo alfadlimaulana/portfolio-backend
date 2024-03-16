@@ -10,8 +10,9 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    min: 6
   },
-});
+}, {timestamps: true});
 
 userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();

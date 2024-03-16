@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
+require('dotenv').config()
 
 main().catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb+srv://alfadlims:270802@portfoliocluster.svmbp3t.mongodb.net/?retryWrites=true&w=majority", {
+  await mongoose.connect(process.env.DB_URL, {
     autoIndex: true,
     dbName: "portfolio"
   });

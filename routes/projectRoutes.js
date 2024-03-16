@@ -4,7 +4,7 @@ const router = express.Router();
 const projects = require("../controllers/projectController.js");
 const { isLoggedIn } = require("../middleware/authMiddleware.js");
 
-router.route("/").get(projects.getProjects).post(isLoggedIn, projects.addProject);
-router.route("/:id").get(projects.getProjectById).put(isLoggedIn, projects.updateProject).delete(isLoggedIn, projects.deleteProject);
+router.route("/").get(projects.getProjects).post(projects.addProject);
+router.route("/:id").get(projects.getProjectById).patch(projects.updateProject).delete(projects.deleteProject);
 
 module.exports = router;

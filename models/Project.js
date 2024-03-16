@@ -15,6 +15,20 @@ const projectLinkSchema = new mongoose.Schema({
   },
 });
 
+const jobDescSchema = new mongoose.Schema({
+  desc: {
+    type: String,
+    min: 20,
+  },
+});
+
+const techStackSchema = new mongoose.Schema({
+  tech: {
+    type: String,
+    min: 2,
+  },
+});
+
 const projectSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -43,14 +57,7 @@ const projectSchema = new mongoose.Schema({
     required: true,
   },
   jobDesc: {
-    type: [String],
-    required: true,
-    validate: {
-      validator: function (texts) {
-        return texts.every((text) => text.length > 2);
-      },
-      message: (props) => `Panjang ${props.value} harus lebih dari 2 karakter`,
-    },
+    type: [jobDescSchema],
   },
   images: {
     type: [String],
@@ -66,16 +73,9 @@ const projectSchema = new mongoose.Schema({
     type: projectLinkSchema,
   },
   techStack: {
-    type: [String],
-    required: true,
-    validate: {
-      validator: function (emails) {
-        return emails.every((email) => email.length > 2 && email.length < 16);
-      },
-      message: (props) => `Panjang ${props.value} harus lebih dari 2 karakter dan kurang dari 16 karakter`,
-    },
+    type: [techStackSchema],
   },
-});
+}, {timestamps: true});
 
 const Project = mongoose.model("Project", projectSchema);
 
