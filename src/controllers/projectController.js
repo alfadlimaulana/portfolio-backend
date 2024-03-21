@@ -20,10 +20,14 @@ module.exports.getProjects = async (req, res) => {
 
 module.exports.addProject = async (req, res) => {
   try {
-    const data = await Project.create(req.body);
+    let data = req.body
+    const file = (req.files).map((file) => file.path)
+
+    data = { ...data, images: file}
+    const createdData = await Project.create(data);
     res.status(201).json({
       status: "success",
-      data: data,
+      data: createdData,
       message: "Data berhasil ditambahkan",
     });
   } catch (error) {
@@ -44,7 +48,7 @@ module.exports.getProjectById = async (req, res) => {
       })
     }
 
-    const data = await Project.findOne({ id: parseInt(id) });
+    const data = await Project.findById(id, {projection: {_id: 0}});
 
     if (!data) {
       res.status(404).json({
@@ -69,6 +73,12 @@ module.exports.getProjectById = async (req, res) => {
 module.exports.updateProject = async (req, res) => {
   try {
     const { id } = req.params
+    let data = req.body
+
+    if (!req.files.length == 0) {
+      const file = (req.files).map((file) => file.path)
+      data = { ...data, images: file}
+    }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(404).json({
@@ -77,9 +87,9 @@ module.exports.updateProject = async (req, res) => {
       })
     }
     
-    const data = await Project.findOneAndUpdate({ id }, req.body);
+    const project = await Project.findByIdAndUpdate(id, data, {new: true});
     
-    if (!data) {
+    if (!project) {
       res.status(404).json({
         status:"failed",
         errors: "Project Not found"
@@ -88,9 +98,10 @@ module.exports.updateProject = async (req, res) => {
 
     res.status(200).json({
       status: "success",
-      data: data,
+      data: project,
       message: "Data berhasil diubah",
     });
+        
   } catch (error) {
     res.status(500).send({
       status: "failed",
@@ -110,7 +121,7 @@ module.exports.deleteProject = async (req, res) => {
       })
     }
 
-    const data = await Project.findOneAndDelete({ id: parseInt(id) });
+    const data = await Project.findByIdAndDelete(id);
     
     if (!data) {
       res.status(404).json({

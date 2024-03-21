@@ -1,20 +1,24 @@
 const express = require("express");
 const methodOverride = require("method-override");
 const cors = require('cors')
+const path = require('path')
 var cookieParser = require("cookie-parser");
 require('dotenv').config()
 
 const app = express();
-const projectRoutes = require("./routes/projectRoutes");
-const userRoutes = require("./routes/userRoutes");
+const publicDirectoryPath = path.join(__dirname, 'public');
 
-require("./utils/db.js");
+const projectRoutes = require("./src/routes/projectRoutes");
+const userRoutes = require("./src/routes/userRoutes");
+
+require("./src/utils/db.js");
 
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(methodOverride("_method"));
 
+app.use('/public', express.static(publicDirectoryPath))
 app.use("/api/projects", projectRoutes);
 app.use("/api", userRoutes);
 

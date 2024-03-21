@@ -12,7 +12,11 @@ module.exports.getErrorMessage = (err) => {
     errors["validation"][Object.keys(err.keyValue)[0]] = `Data dengan ${Object.keys(err.keyValue)[0]} yang sama telah tersimpan di database`;
   } else if (err._message == "Project validation failed") {
     Object.values(err.errors).forEach((error) => {
-      errors["validation"][error.properties.path] = error.properties.message;
+      if (error.name === "ValidatorError") {
+        errors["validation"][error.properties.path] = error.properties.message;
+      } else {
+        errors.message = err.message
+      }
     });
   } else {
     errors.message = err.message
