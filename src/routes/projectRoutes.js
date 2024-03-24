@@ -29,7 +29,7 @@ upload = multer({ storage: storage, fileFilter: fileFilter }).array('images')
 const projects = require("../controllers/projectController.js");
 const { isLoggedIn } = require("../middleware/authMiddleware.js");
 
-router.route("/").get(projects.getProjects).post(upload, projects.addProject);
-router.route("/:id").get(projects.getProjectById).patch(upload, projects.updateProject).delete(projects.deleteProject);
+router.route("/").get(isLoggedIn, projects.getProjects).post(isLoggedIn, upload, projects.addProject);
+router.route("/:id").get(projects.getProjectById).patch(isLoggedIn, upload, projects.updateProject).delete(isLoggedIn, projects.deleteProject);
 
 module.exports = router;

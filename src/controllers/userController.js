@@ -5,7 +5,7 @@ const path = require('path')
 const bcrypt = require("bcrypt");
 const { getErrorMessage } = require("../utils/helper.js");
 
-const maxAge = 1 * 24 * 60 * 60;
+const maxAge = 60 * 60 * 24 * 1;
 const createToken = (payload, secret, expires) => {
   const token = jwt.sign(payload, secret, {
     expiresIn: expires,
@@ -16,13 +16,14 @@ const createToken = (payload, secret, expires) => {
 module.exports.register = async (req, res) => {
   try {
     const data = await User.create(req.body);
-    const token = await createToken({ id: data._id }, process.env.ACCESS_TOKEN_SECRET, maxAge);
-    res.cookie("jwt", token, {
-      maxAge: maxAge * 1000,
-    });
+    const token = await createToken({ _id: data._id }, process.env.ACCESS_TOKEN_SECRET, maxAge);
+    
     return res.status(201).json({
       status: "success",
-      data: data,
+      data: {
+        username: data.username,
+        token
+      },
       message: "User created successfully",
     });
   } catch (error) {
@@ -41,16 +42,14 @@ module.exports.login = async (req, res) => {
       const match = await bcrypt.compare(req.body.password, data.password);
       
       if (match) {
-        const token = await createToken({ username: data.username }, process.env.ACCESS_TOKEN_SECRET, maxAge);
-
-        res.cookie("jwt", token, {
-          maxAge: maxAge * 1000,
-        });
+        const token = await createToken({ _id: data._id }, process.env.ACCESS_TOKEN_SECRET, maxAge);
 
         return res.status(200).json({
           status: "success",
-          data,
-          token: token,
+          data: {
+            username: data.username,
+            token,
+          },
           message: "Login Success",
         });
       } else {
@@ -68,10 +67,6 @@ module.exports.login = async (req, res) => {
 };
 
 module.exports.logout = (req, res) => {
-  res.cookie("jwt", "", {
-    maxAge: -1,
-  });
-
   res.status(200).json({
     status: "success",
     message: "Berhasil keluar",

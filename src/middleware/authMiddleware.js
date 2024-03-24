@@ -1,25 +1,26 @@
 const jwt = require("jsonwebtoken");
+const User = require("../models/User.js");
 const { getErrorMessage } = require("../utils/helper");
 require('dotenv').config()
 
 module.exports.isLoggedIn = async (req, res, next) => {
-  const token = req.cookies.jwt;
-  if (token) {
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-      if (err) {
-        res.status(401).json({
-          status: "failed",
-          errors: getErrorMessage(new Error(err)),
-        });
-      } else {
-        console.log(decoded);
-        next();
-      }
-    });
-  } else {
+  const { authorization } = req.headers
+
+  if(!authorization) {
+    return res.status(401).json({error: "authorization token required"})
+  }
+
+  const token = authorization.split(' ')[1]
+
+  try {
+    const {_id} = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
+    req.user = { _id }
+
+    next();
+  } catch (error) {
     res.status(401).json({
       status: "failed",
-      errors: getErrorMessage(new Error("Anda Belum Login")),
+      errors: getErrorMessage(new Error("Request is not authorized")),
     });
   }
 };
