@@ -17,6 +17,7 @@ function fileFilter (req, file, cb) {
   if (file.mimetype === "image/png" 
       || file.mimetype === "image/jpg" 
       || file.mimetype === "image/jpeg"
+      || file.mimetype === "image/webp"
   ) {
     cb(null, true)
   } else {
@@ -29,7 +30,7 @@ upload = multer({ storage: storage, fileFilter: fileFilter }).array('images')
 const projects = require("../controllers/projectController.js");
 const { isLoggedIn } = require("../middleware/authMiddleware.js");
 
-router.route("/").get(isLoggedIn, projects.getProjects).post(isLoggedIn, upload, projects.addProject);
-router.route("/:id").get(projects.getProjectById).patch(isLoggedIn, upload, projects.updateProject).delete(isLoggedIn, projects.deleteProject);
+router.route("/").get(projects.getProjects).post(upload, isLoggedIn, projects.addProject);
+router.route("/:id").get(projects.getProjectById).patch(upload, projects.updateProject).delete(isLoggedIn, projects.deleteProject);
 
 module.exports = router;
