@@ -5,15 +5,11 @@ const projectLinkSchema = new mongoose.Schema({
     type: String,
     min: 2,
     max: 64,
-    unique: true,
-    sparse: true
   },
   live: {
     type: String,
     min: 2,
     max: 64,
-    unique: true,
-    sparse: true
   },
 });
 
