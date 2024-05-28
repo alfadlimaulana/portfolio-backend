@@ -8,7 +8,7 @@ module.exports.getProjects = async (req, res) => {
 
     const transformedData = data.map(project => ({
       title: project.title,
-      image: project.images[0]
+      images: [project.images[0]]
     }));
 
     res.status(200).json({
