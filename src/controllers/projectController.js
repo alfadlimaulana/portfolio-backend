@@ -4,10 +4,16 @@ const mongoose = require('mongoose')
 
 module.exports.getProjects = async (req, res) => {
   try {
-    const data = await Project.find();
+    const data = await Project.find().select('title images');
+
+    const transformedData = data.map(project => ({
+      title: project.title,
+      image: project.images[0]
+    }));
+
     res.status(200).json({
       status: "success",
-      data: data,
+      data: transformedData,
       message: "Data berhasil diambil",
     });
   } catch (error) {
