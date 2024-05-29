@@ -7,7 +7,7 @@ module.exports.getProjects = async (req, res) => {
     const data = await Project.find().select('title images');
 
     const transformedData = data.map(project => ({
-      _id,
+      _id: project._id,
       title: project.title,
       images: [project.images[0]]
     }));
