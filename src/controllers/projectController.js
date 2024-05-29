@@ -4,9 +4,10 @@ const mongoose = require('mongoose')
 
 module.exports.getProjects = async (req, res) => {
   try {
-    const data = await Project.find().select('_id title images');
+    const data = await Project.find().select('title images');
 
     const transformedData = data.map(project => ({
+      _id,
       title: project.title,
       images: [project.images[0]]
     }));
